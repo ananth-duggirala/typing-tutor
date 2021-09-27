@@ -8,7 +8,6 @@ from werkzeug.urls import url_parse
 @app.route('/')
 @app.route('/index')
 @app.route('/home')
-@login_required
 def index():
   user = {'username': 'testUser'}
   posts = [
@@ -21,7 +20,8 @@ def index():
       'body': 'Me too!'
     }
   ]
-  return render_template('index.html', title='Home', posts=posts)
+  text = "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content. Lorem ipsum may be used as a placeholder before final copy is available. It is also used to temporarily replace text in a process called greeking, which allows designers to consider the form of a webpage or publication, without the meaning of the text influencing the design. "
+  return render_template('index.html', title='Home', text=text, posts=posts)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
