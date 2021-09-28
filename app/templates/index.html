@@ -3,8 +3,4 @@
 {% block content %}
     <div><p>{{ text }}</p></div><br>
     <textarea onselectstart="return false" onpaste="return false;" onCopy="return false" onCut="return false" onDrag="return false" onDrop="return false" autocomplete=off></textarea><br>
-    <h2>Hello, {{ current_user.username }}</h2>
-    {% for post in posts %}
-    <div><p>{{ post.author.username }} says: <b>{{ post.body }}</b></p></div>
-    {% endfor %}
 {% endblock %}
