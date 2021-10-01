@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, request, url_for
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post, Leaderboard
 from werkzeug.urls import url_parse
@@ -58,13 +58,33 @@ def register():
 @app.route('/user/<username>')
 @login_required
 def user(username):
-  user = User.query.filter_by(username=username).first_or_404()
-  posts = [
-    {'author': user, 'body': 'Test post #1'},
-    {'author': user, 'body': 'Test post #2'}
-  ]
-  return render_template('user.html', user=user, posts=posts)
-  
+    user = User.query.filter_by(username=username).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    posts = user.posts.order_by(Post.timestamp.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('user', username=user.username, page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('user', username=user.username, page=posts.prev_num) \
+        if posts.has_prev else None
+    form = EmptyForm()
+    return render_template('user.html', user=user, posts=posts.items,
+                           next_url=next_url, prev_url=prev_url, form=form)
+
+@app.route('/user_highscores/<username>')
+@login_required
+def user_highscores(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    scores = user.scores.order_by(Leaderboard.speed.desc()).paginate(
+        page, app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('user', username=user.username, page=scores.next_num) \
+        if scores.has_next else None
+    prev_url = url_for('user', username=user.username, page=scores.prev_num) \
+        if scores.has_prev else None
+    form = EmptyForm()
+    return render_template('user_highscores.html', user=user, scores=scores.items,
+                           next_url=next_url, prev_url=prev_url, form=form)
+
 
 @app.before_request
 def before_request():

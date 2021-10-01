@@ -16,8 +16,9 @@
       <a href="{{ url_for('login') }}">Login</a>
       {% else %}
       <a href="{{ url_for('leaderboard') }}">Leaderboard</a>      
+      <a href="{{ url_for('user_highscores', username=current_user.username) }}">Your Highscores</a>
       <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>      
-      <a href="{{ url_for('logout') }}">Logout</a>      
+      <a href="{{ url_for('logout') }}">Logout</a>
       {% endif %}
     </div>
     <hr>
