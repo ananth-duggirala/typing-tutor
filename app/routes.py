@@ -2,10 +2,11 @@ from flask import render_template, flash, redirect, request, url_for
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Post
+from app.models import User, Post, Leaderboard
 from werkzeug.urls import url_parse
 from datetime import datetime
 from app.forms import EditProfileForm, PostForm
+import json
 
 @app.route('/')
 @app.route('/index')
@@ -115,3 +116,17 @@ def forum():
 def leaderboard():
   posts = []
   return render_template('leaderboard.html', title='Leaderboard', posts=posts)
+
+@app.route('/post_score', methods = ['POST'])
+def post_score():
+  if request.method == 'POST':
+    try:
+      speed = request.form["speed"]
+      user_id = current_user
+      username = current_user.username
+      score = Leaderboard(speed=speed, author=current_user, username=current_user.username)
+      db.session.add(score)
+      db.session.commit()
+      return redirect(url_for('index'))
+    except Exception as e:
+      return str(e), 400

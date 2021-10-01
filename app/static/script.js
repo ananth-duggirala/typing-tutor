@@ -1,15 +1,34 @@
+const POST_SCORE_URL = '/post_score'
+
+function handleInput(speed) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', POST_SCORE_URL, true);
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+    msg = "speed=" + speed;
+    xhr.send(msg);
+
+    xhr.addEventListener('load', reqListener);
+
+    console.log('xhr.responseText:', xhr.responseText);
+    console.log('xhr.status:', xhr.status);
+}
+function reqListener() {
+//    console.log('this.responseText:', this.responseText);
+    console.log('this.status:', this.status);
+}
+
 const test_mode = document.querySelector('test-mode');
 const prompt_text = document.querySelector('prompt-text');
 const response_text = document.querySelector('response-text');
 
 function calculateWPM(text_length, time_elapsed, fraction_correct){
-    gross_wpm = 60*text_length/(5*time_elapsed/1000);
-    net_wpm = gross_wpm*fraction_correct;
+    var gross_wpm = 60*text_length/(5*time_elapsed/1000);
+    var net_wpm = gross_wpm*fraction_correct;
     return [gross_wpm, net_wpm];
 }
 
 function getPrompt(){
-    return "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.";
+    return "In publishing and graphic design";
 }
 
 function prompt_fn(){
@@ -44,11 +63,12 @@ function countFunction(){
         fraction_correct /= prompt_length;
         
         var wpm_metrics = calculateWPM(prompt_length, time_elapsed, fraction_correct);
-        gross_wpm = parseInt(wpm_metrics[0]);
-        net_wpm = parseInt(wpm_metrics[1]);
+        var gross_wpm = parseInt(wpm_metrics[0]);
+        var net_wpm = parseInt(wpm_metrics[1]);
 
         document.getElementById("test").innerHTML = "Gross speed: " + gross_wpm + "<br>" + "Net speed: " + net_wpm;
-        firstTime = true;
+        first_time = true;
+        handleInput(net_wpm.toString());
     }
 
     if (response_length < prompt_length){
