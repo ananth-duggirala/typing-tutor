@@ -103,9 +103,9 @@ def forum():
   page = request.args.get('page', 1, type=int)
   posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
 
-  next_url = url_for('index', page=posts.next_num) \
+  next_url = url_for('forum', page=posts.next_num) \
     if posts.has_next else None
-  prev_url = url_for('index', page=posts.prev_num) \
+  prev_url = url_for('forum', page=posts.prev_num) \
     if posts.has_prev else None
   return render_template('forum.html', title='Forum', form=form,
                            posts=posts.items, next_url=next_url,
@@ -114,8 +114,16 @@ def forum():
 @app.route('/leaderboard', methods=['GET', 'POST'])
 @login_required
 def leaderboard():
-  posts = []
-  return render_template('leaderboard.html', title='Leaderboard', posts=posts)
+  page = request.args.get('page', 1, type=int)
+  scores = Leaderboard.query.order_by(Leaderboard.speed.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
+
+  next_url = url_for('scores', page=scores.next_num) \
+    if scores.has_next else None
+  prev_url = url_for('scores', page=scores.prev_num) \
+    if scores.has_prev else None
+  return render_template('leaderboard.html', title='Leaderboard',
+                           scores=scores.items, next_url=next_url,
+                           prev_url=prev_url)
 
 @app.route('/post_score', methods = ['POST'])
 def post_score():

@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div><p>123</p></div><br>
+
+{% for score in scores %}
+{% include '_score.html' %}
+{% endfor %}
+
 {% endblock %}
