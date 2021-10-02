@@ -39,6 +39,7 @@ function getPrompt(){
 }
 
 function prompt_fn(){
+    first_time = true;
     prompt = getPrompt();
     document.getElementById("prompt-text").innerText = prompt;
 }
