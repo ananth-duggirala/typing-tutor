@@ -1,7 +1,8 @@
-<table>
-    <tr valign="top">
-      <td><img src="{{ score.author.avatar(36) }}"></td>
-      <td>{{ score.author.username }} : {{ score.speed }} : {{ score.time.strftime('%m-%d-%Y %H:%M') }}</td>
-    </tr>
+  <table>
+    <tbody>
+          <td>{{ score.author.username }}</td>
+          <td>{{ score.speed }}</td>
+          <td>{{ score.time.strftime('%-m/%-d/%Y - %-I:%M %p') }}</td>
+        </tr>
+    </tbody>
   </table>
-
