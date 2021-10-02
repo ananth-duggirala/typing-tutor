@@ -1,1 +1,1 @@
-web: flask db upgrade; gunicorn typing-tutor:app
+web: flask db upgrade; gunicorn typing_tutor:app
