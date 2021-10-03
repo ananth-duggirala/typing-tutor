@@ -1,11 +1,10 @@
-from flask import render_template, flash, redirect, request, url_for
-from app import app, db
-from app.main import LoginForm, RegistrationForm, EditProfileForm, EmptyForm
+from flask import render_template, flash, redirect, request, url_for, current_app
+from app import db
+from app.main.forms import EditProfileForm, EmptyForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Post, Leaderboard
 from werkzeug.urls import url_parse
 from datetime import datetime
-from app.main import EditProfileForm, PostForm
 from app.main import bp
 import json
 
@@ -22,10 +21,10 @@ def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
     posts = user.posts.order_by(Post.timestamp.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('user', username=user.username, page=posts.next_num) \
+        page, current_app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('main.user', username=user.username, page=posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('user', username=user.username, page=posts.prev_num) \
+    prev_url = url_for('main.user', username=user.username, page=posts.prev_num) \
         if posts.has_prev else None
     form = EmptyForm()
     return render_template('user.html', user=user, posts=posts.items,
@@ -37,10 +36,10 @@ def user_highscores(username):
     user = User.query.filter_by(username=username).first_or_404()
     page = request.args.get('page', 1, type=int)
     scores = user.scores.order_by(Leaderboard.speed.desc()).paginate(
-        page, app.config['POSTS_PER_PAGE'], False)
-    next_url = url_for('user', username=user.username, page=scores.next_num) \
+        page, current_app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('main.user_highscores', username=user.username, page=scores.next_num) \
         if scores.has_next else None
-    prev_url = url_for('user', username=user.username, page=scores.prev_num) \
+    prev_url = url_for('main.user_highscores', username=user.username, page=scores.prev_num) \
         if scores.has_prev else None
     form = EmptyForm()
     return render_template('user_highscores.html', user=user, scores=scores.items,
@@ -63,7 +62,7 @@ def edit_profile():
     current_user.about_me = form.about_me.data
     db.session.commit()
     flash('Your changes have been saved.')
-    return redirect(url_for('edit_profile'))
+    return redirect(url_for('main.edit_profile'))
   elif request.method == 'GET':
     form.username.data = current_user.username
     form.about_me.data = current_user.about_me
@@ -79,14 +78,14 @@ def forum():
     db.session.add(post)
     db.session.commit()
     flash('Your post is now live!')
-    return redirect(url_for('forum'))
+    return redirect(url_for('main.forum'))
     
   page = request.args.get('page', 1, type=int)
-  posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
+  posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
 
-  next_url = url_for('forum', page=posts.next_num) \
+  next_url = url_for('main.forum', page=posts.next_num) \
     if posts.has_next else None
-  prev_url = url_for('forum', page=posts.prev_num) \
+  prev_url = url_for('main.forum', page=posts.prev_num) \
     if posts.has_prev else None
   return render_template('forum.html', title='Forum', form=form,
                            posts=posts.items, next_url=next_url,
@@ -98,9 +97,9 @@ def leaderboard():
   page = request.args.get('page', 1, type=int)
   scores = Leaderboard.query.order_by(Leaderboard.speed.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
 
-  next_url = url_for('scores', page=scores.next_num) \
+  next_url = url_for('main.leaderboard', page=scores.next_num) \
     if scores.has_next else None
-  prev_url = url_for('scores', page=scores.prev_num) \
+  prev_url = url_for('main.leaderboard', page=scores.prev_num) \
     if scores.has_prev else None
   return render_template('leaderboard.html', title='Leaderboard',
                            scores=scores.items, next_url=next_url,
@@ -116,6 +115,6 @@ def post_score():
       score = Leaderboard(speed=speed, author=current_user, username=current_user.username)
       db.session.add(score)
       db.session.commit()
-      return redirect(url_for('index'))
+      return redirect(url_for('main.index'))
     except Exception as e:
       return str(e), 400
