@@ -95,7 +95,7 @@ def forum():
 @login_required
 def leaderboard():
   page = request.args.get('page', 1, type=int)
-  scores = Leaderboard.query.order_by(Leaderboard.speed.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
+  scores = Leaderboard.query.order_by(Leaderboard.speed.desc()).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
 
   next_url = url_for('main.leaderboard', page=scores.next_num) \
     if scores.has_next else None
