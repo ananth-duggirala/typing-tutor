@@ -25,7 +25,7 @@ def login():
       next_page = url_for('main.index')
       
     return redirect(url_for('main.index'))
-  return render_template('login.html', title='Sign In', form=form)
+  return render_template('auth/login.html', title='Sign In', form=form)
   
 @bp.route('/logout')
 def logout():
@@ -45,4 +45,4 @@ def register():
     db.session.commit()
     flash('Welcome aboard!')
     return redirect(url_for('auth.login'))
-  return render_template('register.html', title='Register', form=form)
+  return render_template('auth/register.html', title='Register', form=form)
