@@ -12,7 +12,7 @@
     <div>Links: 
       <a href="{{ url_for('main.index') }}">Home</a>
       <a href="{{ url_for('main.forum') }}">Forum</a>
-      <a href="{{ url_for('main.leaderboard') }}">Leaderboard</a>      
+      <a href="{{ url_for('main.leaderboard') }}">Leaderboard</a>     
       {% if current_user.is_anonymous %}
       <a href="{{ url_for('auth.login') }}">Login</a>
       {% else %}
