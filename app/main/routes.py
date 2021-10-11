@@ -58,27 +58,27 @@ def before_request():
 def edit_profile():
   form = EditProfileForm(original_username=current_user)
   if form.validate_on_submit():
-    current_user.username = form.username.data
     current_user.about_me = form.about_me.data
     db.session.commit()
     flash('Your changes have been saved.')
     return redirect(url_for('main.edit_profile'))
   elif request.method == 'GET':
-    form.username.data = current_user.username
     form.about_me.data = current_user.about_me
   return render_template('edit_profile.html', title='Edit Profile',
                            form=form)
                            
 @bp.route('/forum', methods=['GET', 'POST'])
-@login_required
 def forum():
   form = PostForm()
-  if form.validate_on_submit():
-    post = Post(body=form.post.data, author=current_user)
-    db.session.add(post)
-    db.session.commit()
-    flash('Your post is now live!')
-    return redirect(url_for('main.forum'))
+  if current_user.is_authenticated:
+    if form.validate_on_submit():
+      post = Post(body=form.post.data, author=current_user)
+      db.session.add(post)
+      db.session.commit()
+      flash('Your post is now live!')
+      return redirect(url_for('main.forum'))
+  else:
+    flash('You need to be logged in to contribute to the discussion.')
     
   page = request.args.get('page', 1, type=int)
   posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
@@ -92,7 +92,6 @@ def forum():
                            prev_url=prev_url)
 
 @bp.route('/leaderboard', methods=['GET', 'POST'])
-@login_required
 def leaderboard():
   page = request.args.get('page', 1, type=int)
   scores = Leaderboard.query.order_by(Leaderboard.speed.desc()).paginate(page, current_app.config['POSTS_PER_PAGE'], False)
